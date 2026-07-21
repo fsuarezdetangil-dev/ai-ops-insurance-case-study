@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Enabled Operations in Insurance · P&C Commercial Lines Case Study</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0A0A0A;--card:#141414;--elevated:#1C1C1C;--red:#C8102E;--green:#1F7D6B;--purple:#7030A0;--amber:#D97706;--blue:#2563EB;--txt:#F5F5F5;--muted:#9CA3AF;--border:#2A2A2A;--mono:'JetBrains Mono','Courier New',monospace}
+html,body{background:var(--bg);font-family:'Inter',system-ui,sans-serif;color:var(--txt);min-height:100vh;padding:0;margin:0}
+.outer{max-width:1200px;margin:0 auto;padding:20px 24px}
+@media(max-width:768px){.outer{padding:12px 12px}}
+@media(max-width:480px){.outer{padding:8px 8px}}
+
+/* TOPBAR */
+.topbar{background:var(--card);border:.5px solid var(--border);border-radius:10px 10px 0 0;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.brand{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+
+
+/* MAIN TAB NAV */
+.tab-nav{background:var(--elevated);border-left:.5px solid var(--border);border-right:.5px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;padding:0 24px}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-size:12px;font-weight:600;padding:10px 14px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+@media(max-width:600px){.tab-btn{font-size:11px;padding:9px 10px}}
+.tab-btn.active{color:var(--txt);border-bottom-color:var(--red)}
+.tab-btn.active.example-tab{border-bottom-color:var(--green);color:#6EE7B7}
+.tab-btn:hover:not(.active){color:var(--txt)}
+.tab-btn.example-tab{color:var(--green);opacity:.8}
+
+/* SUBTAB BAR — shown only when tab 3 is active */
+.subtab-bar{background:rgba(31,125,107,0.07);border-left:.5px solid var(--border);border-right:.5px solid var(--border);border-bottom:.5px solid rgba(31,125,107,0.25);padding:0 24px;display:none;align-items:center;gap:0}
+@media(max-width:600px){.subtab-bar{padding:0 12px}}
+.subtab-bar.visible{display:flex}
+.subtab-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);white-space:nowrap;padding-right:12px;border-right:.5px solid rgba(31,125,107,0.3);margin-right:4px;flex-shrink:0;opacity:.7}
+.subtab-btn{background:none;border:none;border-bottom:2px solid transparent;color:rgba(31,125,107,.6);font-size:11px;font-weight:600;padding:7px 10px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;display:flex;align-items:center;gap:6px}
+.subtab-btn.active{color:#6EE7B7;border-bottom-color:var(--green)}
+.subtab-btn:hover:not(.active){color:#6EE7B7}
+.subtab-arrow{color:rgba(31,125,107,.35);font-size:11px;padding:7px 0;flex-shrink:0}
+
+/* SLIDE WRAP */
+.slide-wrap{background:var(--bg);border:.5px solid var(--border);border-top:none;border-radius:0 0 10px 10px;padding:28px 32px;min-height:560px}
+@media(max-width:768px){.slide-wrap{padding:18px 16px;min-height:auto}}
+@media(max-width:480px){.slide-wrap{padding:14px 12px}}
+.slide{display:none}.slide.active{display:block}
+.subslide{display:none}.subslide.active{display:block}
+
+/* COMMON */
+.sn{font-family:var(--mono);font-size:11px;color:var(--red);font-weight:700;letter-spacing:.08em}
+.sn-ex{font-family:var(--mono);font-size:11px;color:var(--green);font-weight:700;letter-spacing:.08em}
+.st{font-size:24px;font-weight:700;color:var(--txt);line-height:1.2;margin:6px 0 12px}
+@media(max-width:768px){.st{font-size:20px}}
+@media(max-width:480px){.st{font-size:17px}}
+.ss{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px}
+.sl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.sl::after{content:'';flex:1;height:.5px;background:var(--border)}
+.pq{background:var(--elevated);border-left:3px solid var(--border);padding:13px 17px;font-size:13px;line-height:1.75;color:var(--txt);font-style:italic}
+.pa{font-style:normal;font-size:11px;color:var(--muted);margin-top:7px;line-height:1.5}
+.br{border-top:.5px solid var(--border);padding-top:12px;display:flex;align-items:flex-start;gap:8px;margin-top:10px}
+.ba{color:var(--red);font-size:14px;flex-shrink:0;margin-top:1px}
+.bae{color:var(--green);font-size:14px;flex-shrink:0;margin-top:1px}
+.bt{font-size:12px;color:var(--muted);line-height:1.6}.bt strong{color:var(--txt);font-weight:600}
+.g8{height:8px}.g12{height:12px}.g16{height:16px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:768px){.r3{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.r2,.r3{grid-template-columns:1fr}}
+.card{background:var(--card);border:.5px solid var(--border);border-radius:6px;padding:11px 13px}
+.cl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:5px}
+.cv{font-family:var(--mono);font-size:20px;color:var(--txt);margin-bottom:2px}
+.cn{font-size:11px;color:var(--muted);line-height:1.4}
+.kpi{background:var(--card);border:.5px solid var(--border);border-radius:6px;padding:10px 12px}
+.kf{font-family:var(--mono);font-size:11px;color:var(--muted);text-decoration:line-through}
+.kt{font-family:var(--mono);font-size:18px;font-weight:700;color:#6EE7B7}
+.kl{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+.src{font-size:11px;color:var(--muted);border-top:.5px solid var(--border);padding-top:10px;margin-top:10px}
+/* Tab2 */
+.lgb{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.li2{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+.ld{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+/* Tab 3 */
+.pf{display:flex;overflow:hidden;border-radius:5px;border:.5px solid var(--border)}
+.pfs{flex:1;background:var(--card);padding:8px 6px;text-align:center;border-right:.5px solid var(--border)}
+.pfs:last-child{border-right:none}
+.pfn{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:2px}
+.pft{font-size:11px;font-weight:600;color:var(--txt);line-height:1.3}
+.pfd{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3}
+.pain{background:var(--card);border:.5px solid var(--border);border-left:2px solid rgba(200,16,46,.5);border-radius:0 4px 4px 0;padding:7px 10px}
+.pt{font-size:11px;font-weight:600;color:var(--txt);margin-bottom:1px}
+.pm{font-family:var(--mono);font-size:11px;color:#f87171;margin-bottom:1px}
+.pr{font-size:10px;color:var(--muted);line-height:1.4}
+.vd{background:var(--card);border:.5px solid var(--border);border-top:2px solid var(--green);border-radius:0 0 5px 5px;padding:8px 10px}
+.vt{font-size:11px;font-weight:600;color:#6EE7B7;margin-bottom:2px}
+.vm{font-family:var(--mono);font-size:12px;color:var(--txt)}
+.vn{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3}
+.crb{background:var(--card);border:.5px solid var(--border);border-radius:6px;padding:9px 11px;text-align:center}
+.crl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+.crv{font-family:var(--mono);font-size:18px;font-weight:700}
+.crn{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3}
+.verd{background:var(--elevated);border:.5px solid var(--border);border-left:3px solid var(--green);border-radius:0 6px 6px 0;padding:9px 13px;display:flex;gap:9px}
+/* Tab 3B */
+.lgsm{display:flex;gap:9px;flex-wrap:wrap;align-items:center;background:var(--elevated);border:.5px solid var(--border);border-radius:5px;padding:7px 11px;margin-bottom:12px}
+.lgi{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
+.ln{font-family:var(--mono);font-size:10px;font-weight:700;color:#a78bfa;background:rgba(112,48,160,.15);border:.5px solid rgba(112,48,160,.4);border-radius:3px;padding:1px 5px}
+.ltool{font-family:var(--mono);font-size:10px;color:#67e8f9;background:rgba(6,182,212,.1);border:.5px solid rgba(6,182,212,.3);border-radius:3px;padding:1px 5px}
+.lhitl{font-size:10px;font-weight:700;color:#fbbf24;background:rgba(217,119,6,.1);border:.5px solid rgba(217,119,6,.35);border-radius:3px;padding:1px 5px}
+.lorch{font-size:10px;color:#f9a8d4;background:rgba(236,72,153,.07);border:.5px solid rgba(236,72,153,.3);border-radius:10px;padding:2px 7px}
+.al{display:grid;grid-template-columns:1fr 170px;gap:10px}
+@media(max-width:600px){.al{grid-template-columns:1fr}}
+.nf{display:flex;flex-direction:column}
+.nb{background:var(--card);border:.5px solid var(--border);border-left:2.5px solid var(--purple);border-radius:0 6px 6px 0;padding:8px 10px}
+.nh{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.nn{font-family:var(--mono);font-size:10px;font-weight:700;color:#a78bfa;background:rgba(112,48,160,.15);border:.5px solid rgba(112,48,160,.4);border-radius:3px;padding:1px 5px;flex-shrink:0}
+.ntitle{font-size:12px;font-weight:600;color:var(--txt)}
+.nd{font-size:11px;color:var(--muted);margin-bottom:4px;line-height:1.4}
+.tools{display:flex;flex-wrap:wrap;gap:3px}
+.tool{font-family:var(--mono);font-size:10px;color:#67e8f9;background:rgba(6,182,212,.08);border:.5px solid rgba(6,182,212,.25);border-radius:3px;padding:1px 5px}
+.or{display:flex;align-items:center;gap:5px;padding:2px 0 2px 10px}
+.ol{width:2px;background:var(--border);align-self:stretch;margin-left:11px;flex-shrink:0}
+.ob{font-size:10px;color:#f9a8d4;background:rgba(236,72,153,.07);border:.5px solid rgba(236,72,153,.25);border-radius:10px;padding:2px 7px;white-space:nowrap}
+.hcol{display:flex;flex-direction:column;gap:7px;padding-top:2px}
+.hlbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:2px}
+.hc{background:rgba(217,119,6,.06);border:.5px solid rgba(217,119,6,.3);border-radius:5px;padding:8px 9px}
+.htag{font-size:10px;font-weight:700;color:#fbbf24;letter-spacing:.04em;margin-bottom:2px}
+.hwhen{font-size:11px;font-weight:600;color:var(--txt);margin-bottom:2px;line-height:1.3}
+.hact{font-size:10px;color:var(--muted);line-height:1.4}
+.stpb{background:var(--elevated);border:.5px solid var(--border);border-radius:5px;padding:8px 9px;margin-top:2px}
+.obs{background:var(--elevated);border:.5px solid var(--border);border-radius:5px;padding:8px 11px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:10px}
+.obsl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);flex-shrink:0}
+.obsp{display:flex;gap:5px;flex-wrap:wrap;flex:1}
+.obspi{font-family:var(--mono);font-size:10px;border-radius:3px;padding:2px 7px;border:.5px solid}
+.obsn{font-size:10px;color:var(--muted);font-style:italic}
+/* Tab 3C placeholder */
+.phbox{background:var(--elevated);border:2px dashed #d97706;border-radius:8px;padding:28px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+/* Tab 4,5,6 */
+.layers{display:flex;flex-direction:column;gap:4px}
+.layer{display:grid;grid-template-columns:128px 1fr;border-radius:5px;overflow:hidden;border:.5px solid var(--border)}
+.ltag{display:flex;align-items:center;justify-content:center;padding:10px 10px;text-align:center}
+.ltag span{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;line-height:1.4}
+.lbody{background:var(--card);padding:9px 11px;border-left:.5px solid var(--border)}
+.ltitle{font-size:12px;font-weight:600;color:var(--txt);margin-bottom:2px}
+.ldesc{font-size:11px;color:var(--muted);line-height:1.5}
+.tr{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:.5px solid var(--border)}
+.tr:last-child{border-bottom:none;padding-bottom:0}
+.tdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.trole{font-size:11px;font-weight:600;color:var(--txt);line-height:1.3}
+.tnote{font-size:10px;color:var(--muted);margin-top:1px;line-height:1.3}
+.gi{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:.5px solid var(--border)}
+.gi:last-child{border-bottom:none;padding-bottom:0}
+.gt{font-size:11px;color:var(--muted);line-height:1.4}.gt strong{color:var(--txt)}
+.ps{background:var(--elevated);border:.5px solid var(--border);border-radius:6px;padding:10px 14px;display:flex;gap:14px}
+.psc{flex:1}
+.psl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.psi{font-size:11px;color:var(--muted);padding:3px 0;border-bottom:.5px solid var(--border);line-height:1.4}
+.psi:last-child{border-bottom:none}.psi strong{color:var(--txt)}
+/* Tab 5 */
+.phases{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+@media(max-width:900px){.phases{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.phases{grid-template-columns:1fr}}
+.phase{background:var(--card);border:.5px solid var(--border);border-radius:5px;overflow:hidden}
+.phdr{padding:9px 11px;border-bottom:.5px solid var(--border)}
+.pdays{font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:2px}
+.pname{font-size:12px;font-weight:700;color:var(--txt);line-height:1.3}
+.pint{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4;font-style:italic}
+.pbody{padding:9px 11px}
+.pthm{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:6px 0 3px}
+.pthm:first-child{margin-top:0}
+.pi{font-size:11px;color:var(--muted);padding:3px 0;border-bottom:.5px solid var(--border);line-height:1.4;display:flex;gap:5px}
+.pi:last-child{border-bottom:none}
+.pid{width:4px;height:4px;border-radius:50%;background:var(--border);flex-shrink:0;margin-top:5px}
+.msr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+@media(max-width:768px){.msr{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.msr{grid-template-columns:1fr}}
+.ms{border-radius:5px;padding:8px 10px;border:.5px solid}
+.mst{font-family:var(--mono);font-size:10px;font-weight:700;margin-bottom:3px}
+.mss{font-size:11px;color:var(--muted);line-height:1.4}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(max-width:600px){.pg{grid-template-columns:1fr}}
+.perf{background:var(--card);border:.5px solid var(--border);border-left:2px solid;border-radius:0 5px 5px 0;padding:8px 10px}
+.pfm{font-size:11px;font-weight:600;color:var(--txt);margin-bottom:2px}
+.pft2{font-family:var(--mono);font-size:11px;margin-bottom:2px}
+.pfn{font-size:10px;color:var(--muted);line-height:1.4}
+/* Tab 6 */
+.pos{background:var(--elevated);border-left:3px solid var(--red);padding:11px 15px;font-size:13px;line-height:1.7;color:var(--txt);margin-bottom:14px}
+.pos em{color:var(--muted);font-style:normal}
+.pillars{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+@media(max-width:900px){.pillars{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.pillars{grid-template-columns:1fr}}
+.pillar{background:var(--card);border:.5px solid var(--border);border-radius:5px;overflow:hidden}
+.piph{padding:10px 11px;border-bottom:.5px solid var(--border)}
+.pipi{font-size:17px;margin-bottom:5px}
+.piptitle{font-size:12px;font-weight:700;color:var(--txt);line-height:1.3;margin-bottom:2px}
+.pips{font-size:10px;color:var(--muted);line-height:1.4}
+.pipb{padding:9px 11px}
+.pipitem{font-size:11px;color:var(--muted);padding:4px 0;border-bottom:.5px solid var(--border);line-height:1.4;display:flex;gap:5px}
+.pipitem:last-child{border-bottom:none}.pipitem strong{color:var(--txt)}
+.pipdot{width:4px;height:4px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.certs{display:flex;gap:5px;flex-wrap:wrap}
+.cert{display:flex;align-items:center;gap:5px;background:var(--elevated);border:.5px solid var(--border);border-radius:5px;padding:4px 9px}
+.certd{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.certl{font-size:10px;color:var(--muted);line-height:1.3}
+.certl strong{color:var(--txt);display:block;font-size:11px}
+.ag{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+@media(max-width:768px){.ag{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.ag{grid-template-columns:1fr}}
+.aname{font-size:11px;font-weight:600;color:var(--txt);margin-bottom:2px;line-height:1.3}
+.adesc{font-size:10px;color:var(--muted);line-height:1.4;margin-bottom:2px}
+.akpi{font-family:var(--mono);font-size:10px;color:#6EE7B7}
+.atag{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;border-radius:3px;padding:1px 5px;margin-top:2px}
+.cta{background:var(--card);border:.5px solid var(--border);border-radius:7px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.ctaname{font-size:16px;font-weight:700;color:var(--txt)}
+.ctasub{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5}
+.ctalinks{display:flex;gap:7px;flex-wrap:wrap}
+.ctalink{font-size:11px;font-weight:600;color:var(--red);border:.5px solid rgba(200,16,46,.35);border-radius:4px;padding:5px 11px;text-decoration:none;background:rgba(200,16,46,.05)}
+/* Bottom nav */
+.bnav{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--card);border:.5px solid var(--border);border-top:none;border-radius:0 0 10px 10px}
+.nbtn{background:none;border:.5px solid var(--border);color:var(--muted);font-size:12px;font-weight:600;padding:6px 14px;border-radius:5px;cursor:pointer;transition:all .15s}
+.nbtn:hover:not(:disabled){color:var(--txt);border-color:var(--muted)}
+.nbtn:disabled{opacity:.3;cursor:default}
+.ndots{display:flex;gap:5px;align-items:center}
+.ndot{width:7px;height:7px;border-radius:50%;background:var(--border);cursor:pointer;border:none;transition:all .15s}
+.ndot.active{background:var(--red);transform:scale(1.25)}
+.ndot.example{background:rgba(31,125,107,.4)}
+.ndot.example.active{background:var(--green);transform:scale(1.25)}
+</style>
+</head>
+<body>
+<div class="outer">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span class="brand">AI-Enabled Operations in Insurance · P&amp;C Commercial Lines</span>
+
+</div>
+
+<!-- MAIN TAB NAV -->
+<div class="tab-nav" id="tabnav">
+  <button class="tab-btn active" onclick="goTo(1)">01 · The Business Case</button>
+  <button class="tab-btn" onclick="goTo(2)">02 · AI Value Map</button>
+  <button class="tab-btn example-tab" onclick="goTo(3)">03 · Worked Example: P&amp;C UW Agent</button>
+</div>
+
+<!-- SUBTAB BAR — visible only on tab 3 -->
+<div class="subtab-bar" id="subtabbar">
+  <span class="subtab-label">AI Operations Example: P&amp;C UW Agent</span>
+  <button class="subtab-btn active" onclick="goSub(1)">Diagnosis</button>
+  <span class="subtab-arrow">→</span>
+  <button class="subtab-btn" onclick="goSub(2)">Agent</button>
+  <span class="subtab-arrow">→</span>
+  <button class="subtab-btn" onclick="goSub(3)">Live Results</button>
+</div>
+
+<!-- SLIDES -->
+<div class="slide-wrap">
+
+<!-- ══ TAB 1: THE MANDATE ══ -->
+<div class="slide active" id="s1">
+  <div class="sn">01 / 06</div>
+  <div class="st" id="s1t">The mandate came from the top</div>
+  <div class="ss" id="s1s">Leading P&amp;C insurance carriers are publicly committing to AI-enabled operations as a core business transformation — not a technology pilot. The mandate is measurable, specific, and tied directly to combined ratio performance.</div>
+  <div class="pq" id="s1q">"The transformation agenda centres on combining AI — algorithmic and large language models — with foundational technology, data, and process reengineering to automate and transform the organisation at a deeply granular level. This requires leadership skilled in actual business transformation: iterative, gritty work that takes sustained focus.<br><br>This is not a technology initiative. It is a business transformation imperative with a direct line to competitive position and margin targets."<div class="pa" id="s1a">— Leading P&amp;C carrier, CEO Annual Letter to Shareholders 2025</div></div>
+  <div class="g12"></div>
+  <div class="r3">
+    <div class="card"><div class="cl">P&amp;C Combined Ratio 2025</div><div class="cv">85.7%</div><div class="cn">~7 pts better than peers over 20 years</div></div>
+    <div class="card"><div class="cl">Underwriting Income 2025</div><div class="cv">$6.5B</div><div class="cn">+43% over 3 years · record margin</div></div>
+    <div class="card"><div class="cl" id="s1l3">Europe / UK Net Written Premium</div><div class="cv">$6.8B</div><div class="cn" id="s1n3">~80% commercial lines · EMEA scale</div></div>
+  </div>
+  <div class="br"><div class="ba">→</div><div class="bt" id="s1br"><strong>AI-enabled insurance operations are already reshaping how carriers compete on the combined ratio.</strong> The transformation spans underwriting intake, claims, and customer service — measurable at each step. The next slide maps the value architecture across operational domains.</div></div>
+  <div class="src" id="s1src">Sources: P&amp;C carrier public disclosures 2025 · Insurance industry benchmarks</div>
+</div>
+
+<!-- ══ TAB 2: AI VALUE MAP ══ -->
+<div class="slide" id="s2">
+  <div class="sn">02 / 06</div>
+  <div class="st">Every AI initiative maps to the combined ratio</div>
+  <div class="ss" id="s2s">The methodology: identify the operational lever, trace it to Loss Ratio or Expense Ratio, quantify the CR impact. This is how AI transformation becomes a finance conversation — not a technology one.</div>
+  <svg width="100%" viewBox="0 0 640 510" role="img" style="display:block">
+    <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+    <rect x="20" y="16" width="174" height="48" rx="4" fill="rgba(37,99,235,.12)" stroke="#2563EB" stroke-width="1"/>
+    <text font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#93C5FD" x="107" y="34" text-anchor="middle" dominant-baseline="central">Underwriting</text>
+    <text font-family="Inter,sans-serif" font-size="11" fill="#64748B" x="107" y="52" text-anchor="middle" dominant-baseline="central">STP · intake · risk scoring</text>
+    <rect x="233" y="16" width="174" height="48" rx="4" fill="rgba(217,119,6,.12)" stroke="#D97706" stroke-width="1"/>
+    <text font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#FCD34D" x="320" y="34" text-anchor="middle" dominant-baseline="central">Claims</text>
+    <text font-family="Inter,sans-serif" font-size="11" fill="#64748B" x="320" y="52" text-anchor="middle" dominant-baseline="central">FNOL · triage · settlement</text>
+    <rect x="446" y="16" width="174" height="48" rx="4" fill="rgba(147,51,234,.12)" stroke="#9333EA" stroke-width="1"/>
+    <text font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#C4B5FD" x="533" y="34" text-anchor="middle" dominant-baseline="central">Customer service</text>
+    <text font-family="Inter,sans-serif" font-size="11" fill="#64748B" x="533" y="52" text-anchor="middle" dominant-baseline="central">Enquiries · renewals · NPS</text>
+    <rect x="10" y="80" width="620" height="136" rx="5" fill="rgba(255,255,255,.02)" stroke="#2A2A2A" stroke-width=".5" stroke-dasharray="4 3"/>
+    <text font-family="Inter,sans-serif" font-size="9" font-weight="700" letter-spacing=".08em" fill="#4B5563" x="18" y="93" dominant-baseline="central">AI INITIATIVES</text>
+    <rect x="20" y="100" width="164" height="26" rx="3" fill="#1C1C1C" stroke="#2A2A2A" stroke-width=".5"/><text font-family="Inter,sans-serif" font-size="11" fill="#9CA3AF" x="102" y="116" text-anchor="middle" dominant-baseline="central">Agentic UW intake agent</text>
+    <rect x="20" y="132" width="164" height="26" rx="3" fill="#1C1C1C" stroke="#2A2A2A" stroke-width=".5"/><text font-family="Inter,sans-serif" font-size="11" fill="#9CA3AF" x="102" y="148" text-anchor="middle" dominant-baseline="central">AI risk scoring engine</text>
+    <rect x="20" y="164" width="164" height="26" rx="3" fill="#1C1C1C" stroke="#2A2A2A" stroke-width=".5"/><text font-family="Inter,sans-serif" font-size="11" fill="#9CA3AF" x="102" y="180" text-anchor="middle" dominant-baseline="central">Appetite RAG validator</text>
+    <rect x="238" y="100" width="164" height="26" rx="3" fill="#1C1C1C" stroke="#2A2A2A" stroke-width=".5"/><text font-family="Inter,sans-serif" font-size="11" fill="#9CA3AF" x="320" y="116" text-anchor="middle" dominant-baseline="central">FNOL automation agent</text>
+    <rect x="238" y="132" width="164" height="26" rx="3" fill="#1C1C1C" stroke="#2A2A2A" stroke-width=".5"/><text font-family="Inter,sans-serif" font-size="11" fill="#9CA3AF" x="320" y="148" text-anchor="middle" dominant-baseline="central">ML-assisted reserving</text>
+    <rect x="238" y="164" width="164" height="26" rx="3" fill="#1C1C1C" stroke="#2A2A2A" stroke-width=".5"/><text font-family="Inter,sans-serif" font-size="11" fill="#9CA3AF" x="320" y="180" text-anchor="middle" dominant-baseline="central">Fraud detection ML</text>
+    <rect x="456" y="100" width="164" height="26" rx="3" fill="#1C1C1C" stroke="#2A2A2A" stroke-width=".5"/><text font-family="Inter,sans-serif" font-size="11" fill="#9CA3AF" x="538" y="116" text-anchor="middle" dominant-baseline="central">Broker self-service agent</text>
+    <rect x="456" y="132" width="164" height="26" rx="3" fill="#1C1C1C" stroke="#2A2A2A" stroke-width=".5"/><text font-family="Inter,sans-serif" font-size="11" fill="#9CA3AF" x="538" y="148" text-anchor="middle" dominant-baseline="central">Renewal automation</text>
+    <rect x="456" y="164" width="164" height="26" rx="3" fill="#1C1C1C" stroke="#2A2A2A" stroke-width=".5"/><text font-family="Inter,sans-serif" font-size="11" fill="#9CA3AF" x="538" y="180" text-anchor="middle" dominant-baseline="central">Policy enquiry agent</text>
+    <line x1="107" y1="64" x2="107" y2="98" stroke="#2563EB" stroke-width=".5"/>
+    <line x1="320" y1="64" x2="320" y2="98" stroke="#D97706" stroke-width=".5"/>
+    <line x1="533" y1="64" x2="533" y2="98" stroke="#9333EA" stroke-width=".5"/>
+    <rect x="60" y="268" width="200" height="52" rx="4" fill="rgba(31,125,107,.12)" stroke="#1F7D6B" stroke-width="1"/>
+    <text font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#6EE7B7" x="160" y="288" text-anchor="middle" dominant-baseline="central">Expense ratio</text>
+    <text font-family="Inter,sans-serif" font-size="11" fill="#64748B" x="160" y="306" text-anchor="middle" dominant-baseline="central">–117 bps · Hub Madrid</text>
+    <rect x="380" y="268" width="200" height="52" rx="4" fill="rgba(192,80,77,.12)" stroke="#C0504D" stroke-width="1"/>
+    <text font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#FCA5A5" x="480" y="288" text-anchor="middle" dominant-baseline="central">Loss ratio</text>
+    <text font-family="Inter,sans-serif" font-size="11" fill="#64748B" x="480" y="306" text-anchor="middle" dominant-baseline="central">–50 bps · improved selection</text>
+    <path d="M102 218 L102 248 L160 248 L160 266" fill="none" stroke="#1F7D6B" stroke-width="1.5" marker-end="url(#arr)"/>
+    <path d="M320 218 L320 248 L480 248 L480 266" fill="none" stroke="#C0504D" stroke-width="1.5" marker-end="url(#arr)"/>
+    <path d="M310 218 L310 240 L160 240 L160 266" fill="none" stroke="#1F7D6B" stroke-width=".8" stroke-dasharray="3 3" marker-end="url(#arr)"/>
+    <path d="M520 218 L520 254 L160 254 L160 266" fill="none" stroke="#1F7D6B" stroke-width="1.5" marker-end="url(#arr)"/>
+    <path d="M546 218 L546 260 L480 260 L480 266" fill="none" stroke="#C0504D" stroke-width=".8" stroke-dasharray="3 3" marker-end="url(#arr)"/>
+    <text font-family="Inter,sans-serif" font-size="9" fill="#1F7D6B" x="126" y="245" text-anchor="middle">cost efficiency</text>
+    <text font-family="Inter,sans-serif" font-size="9" fill="#C0504D" x="406" y="245" text-anchor="middle">risk selection</text>
+    <rect x="190" y="378" width="260" height="56" rx="4" fill="rgba(200,16,46,.10)" stroke="#C8102E" stroke-width="1"/>
+    <text font-family="Inter,sans-serif" font-size="14" font-weight="700" fill="#F87171" x="320" y="399" text-anchor="middle" dominant-baseline="central">Combined ratio</text>
+    <text font-family="Inter,sans-serif" font-size="11" fill="#64748B" x="320" y="419" text-anchor="middle" dominant-baseline="central">–167 bps estimated impact</text>
+    <path d="M160 320 L160 354 L320 354 L320 376" fill="none" stroke="#1F7D6B" stroke-width="1.5" marker-end="url(#arr)"/>
+    <path d="M480 320 L480 354 L320 354" fill="none" stroke="#C0504D" stroke-width="1.5"/>
+    <rect x="418" y="446" width="130" height="18" rx="3" fill="rgba(133,77,14,.1)" stroke="rgba(133,77,14,.35)" stroke-width=".5"/>
+    <text font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="#F59E0B" x="483" y="458" text-anchor="middle" dominant-baseline="central" letter-spacing=".06em">DIRECTIONAL ESTIMATE</text>
+  </svg>
+  <div class="lgb">
+    <span style="font-weight:600;color:var(--txt);font-size:11px">Domains:</span>
+    <span class="li2"><span class="ld" style="background:#2563EB"></span>Underwriting</span>
+    <span class="li2"><span class="ld" style="background:#D97706"></span>Claims</span>
+    <span class="li2"><span class="ld" style="background:#9333EA"></span>Customer service</span>
+    <span style="font-weight:600;color:var(--txt);font-size:11px;margin-left:6px">Arrow = CR driver:</span>
+    <span class="li2"><span class="ld" style="background:#1F7D6B"></span>→ Expense ratio</span>
+    <span class="li2"><span class="ld" style="background:#C0504D"></span>→ Loss ratio</span>
+    <span class="li2"><span style="font-family:monospace;font-size:10px">- -</span>&nbsp;Secondary</span>
+  </div>
+  <div class="br"><div class="ba">→</div><div class="bt"><strong>The agentic UW intake agent is the worked example.</strong> Chosen for its combination of high CR impact, low implementation effort and fast path to measurable result — the profile every transformation initiative should be evaluated against.</div></div>
+</div>
+
+<!-- ══ TAB 3: HANDS ON (with subtabs) ══ -->
+<div class="slide" id="s3">
+
+  <!-- 3A: UW DIAGNOSIS -->
+  <div class="subslide active" id="ss1">
+    <div class="sn-ex">03 · Hands On — Diagnosis</div>
+    <div class="st">Understand the process before designing the solution</div>
+    <div class="ss">P&amp;C Commercial UW is a five-step process generating ~75,000 submissions/year in a regional operations hub. Before proposing any AI initiative, map the current state, isolate the pain points and quantify the value drivers.</div>
+    <div class="sl">A — Current UW process · Commercial Lines P&amp;C</div>
+    <div class="pf">
+      <div class="pfs"><div class="pfn">01</div><div class="pft">Submission intake</div><div class="pfd">Email · portal · API</div></div>
+      <div class="pfs"><div class="pfn">02</div><div class="pft">Data extraction</div><div class="pfd">Manual PDF review</div></div>
+      <div class="pfs"><div class="pfn">03</div><div class="pft">Appetite check</div><div class="pfd">UW vs. guidelines</div></div>
+      <div class="pfs"><div class="pfn">04</div><div class="pft">Risk assessment</div><div class="pfd">Scoring · red flags</div></div>
+      <div class="pfs"><div class="pfn">05</div><div class="pft">Quote &amp; output</div><div class="pfd">Summary · broker comms</div></div>
+    </div>
+    <div class="g12"></div>
+    <div class="sl">B — Operational pain points</div>
+    <div class="r2">
+      <div class="pain"><div class="pt">Inefficient data processing</div><div class="pm">~60% UW time on data tasks</div><div class="pr">→ Automated document ingestion and extraction</div></div>
+      <div class="pain"><div class="pt">Inconsistent risk assessment</div><div class="pm">~25% decision variance across UWs</div><div class="pr">→ Standardised appetite alignment framework</div></div>
+      <div class="pain"><div class="pt">Delayed time-to-quote</div><div class="pm">Avg. 4–6 days · broker frustration</div><div class="pr">→ STP for standard risks, HITL for complex</div></div>
+      <div class="pain"><div class="pt">Limited decision insights</div><div class="pm">Est. +3–5 pts Loss Ratio impact</div><div class="pr">→ AI-driven risk analysis and recommendations</div></div>
+      <div class="pain"><div class="pt">High operational costs</div><div class="pm">€180–220 / submission</div><div class="pr">→ Automated validation and comms generation</div></div>
+      <div class="pain"><div class="pt">Scalability constraints</div><div class="pm">~40 submissions / UW / week max</div><div class="pr">→ Scalable architecture without linear headcount</div></div>
+    </div>
+    <div class="g12"></div>
+    <div class="sl">C — Value drivers</div>
+    <div class="r3">
+      <div class="vd"><div class="vt">Speed</div><div class="vm">4–6 days → &lt;4 h</div><div class="vn">Broker satisfaction · quote-to-bind</div></div>
+      <div class="vd"><div class="vt">Cost efficiency</div><div class="vm">–45 to –55%</div><div class="vn">Cost per submission via automation</div></div>
+      <div class="vd"><div class="vt">Risk selection</div><div class="vm">–3 to –5 pts LR</div><div class="vn">Consistent appetite · portfolio quality</div></div>
+    </div>
+    <div class="g12"></div>
+    <div class="sl">D — Expected CR impact · Hub Madrid · 75,000 submissions/year</div>
+    <div class="r3">
+      <div class="crb"><div class="crl">Expense ratio</div><div class="crv" style="color:#6EE7B7">–117 bps</div><div class="crn">Cost €200→&lt;€100 × 75k sub</div></div>
+      <div class="crb"><div class="crl">Loss ratio</div><div class="crv" style="color:#FCA5A5">–50 bps</div><div class="crn">Improved risk selection</div></div>
+      <div class="crb" style="border-color:rgba(200,16,46,.3)"><div class="crl">Combined ratio</div><div class="crv" style="color:#F87171">–167 bps</div><div class="crn">Directional estimate</div></div>
+    </div>
+    <div class="g12"></div>
+    <div class="verd"><div class="bae">→</div><div class="bt"><strong>Verdict: the initiative is worth designing and launching.</strong> High CR impact, well-understood process, available data, clear HITL governance model. The seven pain points become the functional specification of the agent.</div></div>
+  </div>
+
+  <!-- 3B: UW AGENT -->
+  <div class="subslide" id="ss2">
+    <div class="sn-ex">03 · Hands On — Agent</div>
+    <div class="st">The agentic product</div>
+    <div class="ss">A LangGraph-orchestrated agent with 5 nodes, deterministic routing by design — regulatory auditability requires it — and genuine agentic reasoning within each node. Three mandatory human checkpoints.</div>
+    <div class="lgsm">
+      <span class="lgi"><span class="ln">N1</span>Node</span>
+      <span style="width:.5px;height:14px;background:var(--border);flex-shrink:0"></span>
+      <span class="lgi"><span class="ltool">tool()</span>Invocable tool</span>
+      <span style="width:.5px;height:14px;background:var(--border);flex-shrink:0"></span>
+      <span class="lgi"><span class="lhitl">HITL</span>Human in the Loop</span>
+      <span style="width:.5px;height:14px;background:var(--border);flex-shrink:0"></span>
+      <span class="lgi"><span class="lorch">⟳ orchestrator</span>Agentic reasoning between nodes</span>
+    </div>
+    <div class="al">
+      <div class="nf">
+        <div class="nb"><div class="nh"><span class="nn">N1</span><span class="ntitle">Submission intake</span></div><div class="nd">Channel detection · LoB classification · metadata extraction</div><div class="tools"><span class="tool">email_parser()</span><span class="tool">attachment_classifier()</span><span class="tool">metadata_extractor()</span></div></div>
+        <div class="or"><div class="ol"></div><span class="ob">⟳ evaluates completeness · routes to N2 or HITL-1</span></div>
+        <div class="nb"><div class="nh"><span class="nn">N2</span><span class="ntitle">Data extraction</span></div><div class="nd">Structured risk data from unstructured docs via LLM + parsing</div><div class="tools"><span class="tool">pdf_extractor()</span><span class="tool">ner_extractor()</span><span class="tool">data_validator()</span></div></div>
+        <div class="or"><div class="ol"></div><span class="ob">⟳ checks appetite fit · routes to N3 or HITL-2</span></div>
+        <div class="nb"><div class="nh"><span class="nn">N3</span><span class="ntitle">Appetite &amp; validation</span></div><div class="nd">RAG over KB-Appetite · verdict: in / out / review required</div><div class="tools"><span class="tool">kb_appetite_retriever()</span><span class="tool">exposure_validator()</span></div></div>
+        <div class="or"><div class="ol"></div><span class="ob">⟳ scores complexity · routes to N4 or HITL-3</span></div>
+        <div class="nb"><div class="nh"><span class="nn">N4</span><span class="ntitle">Risk assessment</span></div><div class="nd">Scoring · red flags · pricing recommendation via RAG</div><div class="tools"><span class="tool">risk_scorer()</span><span class="tool">kb_pricing_retriever()</span><span class="tool">red_flag_detector()</span></div></div>
+        <div class="or"><div class="ol"></div><span class="ob">⟳ STP path confirmed · proceeds to N5</span></div>
+        <div class="nb"><div class="nh"><span class="nn">N5</span><span class="ntitle">Output generation</span></div><div class="nd">Risk summary · quote draft · broker communication</div><div class="tools"><span class="tool">quote_generator()</span><span class="tool">risk_summary()</span><span class="tool">broker_comms()</span></div></div>
+      </div>
+      <div class="hcol">
+        <div class="hlbl">HITL checkpoints</div>
+        <div class="hc"><div class="htag">HITL · 1 · After N1</div><div class="hwhen">Incomplete submission</div><div class="hact">→ Request additional info from broker</div></div>
+        <div class="hc"><div class="htag">HITL · 2 · After N3</div><div class="hwhen">Out of appetite</div><div class="hact">→ Auto-decline with justification · UW review</div></div>
+        <div class="hc"><div class="htag">HITL · 3 · After N4</div><div class="hwhen">Complex risk / low score</div><div class="hact">→ Escalate to senior UW · binding stays human</div></div>
+        <div class="stpb"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px">STP path</div><div style="font-size:11px;color:var(--txt);margin-bottom:2px">No HITL triggered</div><div style="font-size:10px;color:var(--muted);line-height:1.4">Standard risk · data complete · in appetite · score acceptable</div></div>
+      </div>
+    </div>
+    <div class="obs"><span class="obsl">Observability</span><div class="obsp"><span class="obspi" style="color:#a78bfa;border-color:rgba(112,48,160,.4);background:rgba(112,48,160,.08)">LangSmith</span><span class="obspi" style="color:#67e8f9;border-color:rgba(6,182,212,.35);background:rgba(6,182,212,.06)">Arize Phoenix</span></div><span class="obsn">Platform TBD · every node execution logged as a span · full audit trail</span></div>
+  </div>
+
+  <!-- 3C: LIVE RESULTS -->
+  <div class="subslide" id="ss3">
+    <div class="sn-ex">03 · Hands On — Live Results</div>
+    <div class="st">The agent at work</div>
+    <div class="ss">72 synthetic submissions processed end-to-end through the LangGraph agent. Execution traces and evaluations captured in Arize Phoenix. EDD framework with 8 acceptance criteria applied across all runs.</div>
+
+    <style>
+    .lr-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:768px){.lr-2col{grid-template-columns:1fr}}
+    .lr-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+    @media(max-width:768px){.lr-kpi-row{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.lr-kpi-row{grid-template-columns:1fr}}
+    .lr-kpi{background:var(--card);border:.5px solid var(--border);border-radius:6px;padding:10px 12px}
+    .lr-kpi-label{font-size:10px;color:var(--muted);margin-bottom:3px}
+    .lr-kpi-val{font-size:18px;font-weight:700;color:var(--txt);line-height:1.1}
+    .lr-kpi-sub{font-size:10px;color:var(--muted);margin-top:2px}
+    .lr-kpi-delta{font-size:10px;font-weight:600;margin-top:2px}
+    .lr-pos{color:#6EE7B7}.lr-neg{color:#f87171}.lr-neu{color:var(--muted)}
+    .lr-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+    .lr-inner{background:var(--card);border:.5px solid var(--border);border-radius:6px;padding:10px 12px}
+    .lr-sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px}
+    .lr-ca-grid{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+    .lr-ca-row{display:grid;grid-template-columns:136px 1fr 52px 52px 54px;gap:6px;align-items:center}
+    .lr-ca-name{font-size:11px;color:var(--txt)}
+    .lr-ca-sub{font-size:9px;color:var(--muted);margin-top:1px}
+    .lr-bar-wrap{position:relative;height:18px;background:var(--elevated);border-radius:3px;overflow:hidden}
+    .lr-bar-v1{position:absolute;top:3px;height:5px;border-radius:2px;background:#2563EB;opacity:.4}
+    .lr-bar-v2{position:absolute;bottom:3px;height:5px;border-radius:2px;background:#2563EB}
+    .lr-pct{font-size:11px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+    .lr-delta{font-size:11px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+    .lr-leg{display:flex;gap:12px;margin-bottom:7px}
+    .lr-leg-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
+    .lr-leg-sq{width:9px;height:5px;border-radius:2px}
+    .lr-hitl-bar{display:flex;height:24px;border-radius:4px;overflow:hidden;gap:2px;margin-bottom:7px}
+    .lr-hitl-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff}
+    .lr-hitl-leg{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+    .lr-hitl-leg-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
+    .lr-hitl-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+    .lr-fix-row{display:grid;grid-template-columns:36px 1fr 64px;gap:7px;align-items:start;padding:6px 8px;background:var(--elevated);border-radius:4px;margin-bottom:4px}
+    .lr-fix-row:last-child{margin-bottom:0}
+    .lr-fix-badge{font-size:9px;font-weight:700;padding:2px 4px;border-radius:3px;text-align:center;background:rgba(31,125,107,.15);color:#6EE7B7}
+    .lr-fix-name{font-size:11px;color:var(--txt)}
+    .lr-fix-desc{font-size:10px;color:var(--muted);margin-top:1px;line-height:1.3}
+    .lr-fix-impact{font-size:10px;color:#6EE7B7;text-align:right}
+    .lr-open{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(217,119,6,.1);color:#fbbf24;border:.5px solid rgba(217,119,6,.3);margin-top:6px}
+    .lr-note{font-size:10px;color:var(--muted);line-height:1.5;margin-top:6px}
+    .lr-note strong{color:var(--muted)}
+    </style>
+
+    <!-- KPI row -->
+    <div class="lr-kpi-row">
+      <div class="lr-kpi">
+        <div class="lr-kpi-label">Avg latency · Arize Phoenix</div>
+        <div class="lr-kpi-val">31.7 s</div>
+        <div class="lr-kpi-sub">v2 prompt-fixed</div>
+        <div class="lr-kpi-delta lr-pos">v1: 1m 46s &nbsp;↓ 70%</div>
+      </div>
+      <div class="lr-kpi">
+        <div class="lr-kpi-label">Cost per submission</div>
+        <div class="lr-kpi-val">$0.038</div>
+        <div class="lr-kpi-sub">v2 · $2.74 total / 72 sub</div>
+        <div class="lr-kpi-delta lr-neu">v1: $0.035 · stable</div>
+      </div>
+      <div class="lr-kpi">
+        <div class="lr-kpi-label">Tokens per submission</div>
+        <div class="lr-kpi-val">9,681</div>
+        <div class="lr-kpi-sub">v2 · 697,032 total</div>
+        <div class="lr-kpi-delta lr-neu">v1: 9,215 · +5%</div>
+      </div>
+      <div class="lr-kpi">
+        <div class="lr-kpi-label">All CAs pass (full STP)</div>
+        <div class="lr-kpi-val">56.9%</div>
+        <div class="lr-kpi-sub">41 / 72 submissions</div>
+        <div class="lr-kpi-delta lr-pos">v1: 54.4% &nbsp;↑ +2.5 pp</div>
+      </div>
+    </div>
+
+    <!-- CA pass rates + HITL/fixes -->
+    <div class="lr-2col">
+      <div>
+        <div class="lr-sec">Acceptance criteria · v1 baseline vs v2 prompt-fixed</div>
+        <div class="lr-leg">
+          <span class="lr-leg-item"><span class="lr-leg-sq" style="background:#2563EB;opacity:.4"></span>v1 baseline (68)</span>
+          <span class="lr-leg-item"><span class="lr-leg-sq" style="background:#2563EB"></span>v2 fixed (72)</span>
+        </div>
+        <div class="lr-ca-grid">
+          <div class="lr-ca-row">
+            <div><div class="lr-ca-name">CA-01 · LoB accuracy</div><div class="lr-ca-sub">H1 — intake node</div></div>
+            <div class="lr-bar-wrap"><div class="lr-bar-v1" style="width:91.2%"></div><div class="lr-bar-v2" style="width:95.8%"></div></div>
+            <div class="lr-pct" style="opacity:.6">91.2%</div><div class="lr-pct">95.8%</div>
+            <div class="lr-delta lr-pos">+4.7 pp</div>
+          </div>
+          <div class="lr-ca-row">
+            <div><div class="lr-ca-name">CA-02 · Extraction accuracy</div><div class="lr-ca-sub">H4 — field priority</div></div>
+            <div class="lr-bar-wrap"><div class="lr-bar-v1" style="width:98.7%"></div><div class="lr-bar-v2" style="width:98.8%"></div></div>
+            <div class="lr-pct" style="opacity:.6">98.7%</div><div class="lr-pct">98.8%</div>
+            <div class="lr-delta lr-neu">+0.1 pp</div>
+          </div>
+          <div class="lr-ca-row">
+            <div><div class="lr-ca-name">CA-03 · Missing fields</div><div class="lr-ca-sub">H4 — extraction node</div></div>
+            <div class="lr-bar-wrap"><div class="lr-bar-v1" style="width:85.3%"></div><div class="lr-bar-v2" style="width:86.1%"></div></div>
+            <div class="lr-pct" style="opacity:.6">85.3%</div><div class="lr-pct">86.1%</div>
+            <div class="lr-delta lr-pos">+0.8 pp</div>
+          </div>
+          <div class="lr-ca-row">
+            <div><div class="lr-ca-name">CA-04 · Appetite verdict</div><div class="lr-ca-sub">No targeted fix</div></div>
+            <div class="lr-bar-wrap"><div class="lr-bar-v1" style="width:92.6%"></div><div class="lr-bar-v2" style="width:93.1%"></div></div>
+            <div class="lr-pct" style="opacity:.6">92.6%</div><div class="lr-pct">93.1%</div>
+            <div class="lr-delta lr-pos">+0.4 pp</div>
+          </div>
+          <div class="lr-ca-row">
+            <div><div class="lr-ca-name">CA-05 · RAG citations</div><div class="lr-ca-sub">Perfect · no regression</div></div>
+            <div class="lr-bar-wrap"><div class="lr-bar-v1" style="width:100%"></div><div class="lr-bar-v2" style="width:100%"></div></div>
+            <div class="lr-pct" style="opacity:.6">100%</div><div class="lr-pct">100%</div>
+            <div class="lr-delta lr-neu">—</div>
+          </div>
+          <div class="lr-ca-row">
+            <div><div class="lr-ca-name">CA-06 · HITL routing</div><div class="lr-ca-sub">H2+H3 · cluster B open</div></div>
+            <div class="lr-bar-wrap"><div class="lr-bar-v1" style="width:72.1%"></div><div class="lr-bar-v2" style="width:70.8%"></div></div>
+            <div class="lr-pct" style="opacity:.6">72.1%</div><div class="lr-pct" style="color:#f87171">70.8%</div>
+            <div class="lr-delta lr-neg">–1.2 pp</div>
+          </div>
+          <div class="lr-ca-row">
+            <div><div class="lr-ca-name">CA-07 · LLM judge</div><div class="lr-ca-sub">98.9/100 avg · stable</div></div>
+            <div class="lr-bar-wrap"><div class="lr-bar-v1" style="width:100%"></div><div class="lr-bar-v2" style="width:100%"></div></div>
+            <div class="lr-pct" style="opacity:.6">100%</div><div class="lr-pct">100%</div>
+            <div class="lr-delta lr-neu">—</div>
+          </div>
+          <div class="lr-ca-row">
+            <div><div class="lr-ca-name">CA-08 · Time-to-quote</div><div class="lr-ca-sub">All 72 pass in v2</div></div>
+            <div class="lr-bar-wrap"><div class="lr-bar-v1" style="width:98.5%"></div><div class="lr-bar-v2" style="width:100%"></div></div>
+            <div class="lr-pct" style="opacity:.6">98.5%</div><div class="lr-pct">100%</div>
+            <div class="lr-delta lr-pos">+1.5 pp</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="lr-sec">Submission outcomes · v2 · 72 total</div>
+        <div class="lr-hitl-bar">
+          <div class="lr-hitl-seg" style="flex:15;background:#1F7D6B">STP 15</div>
+          <div class="lr-hitl-seg" style="flex:8;background:#2563EB">H1 8</div>
+          <div class="lr-hitl-seg" style="flex:32;background:#D97706">H2 32</div>
+          <div class="lr-hitl-seg" style="flex:17;background:#C8102E">H3 17</div>
+        </div>
+        <div class="lr-hitl-leg">
+          <div class="lr-hitl-leg-item"><div class="lr-hitl-dot" style="background:#1F7D6B"></div>STP — complete data, in appetite</div>
+          <div class="lr-hitl-leg-item"><div class="lr-hitl-dot" style="background:#2563EB"></div>HITL-1 — incomplete data</div>
+          <div class="lr-hitl-leg-item"><div class="lr-hitl-dot" style="background:#D97706"></div>HITL-2 — out of appetite</div>
+          <div class="lr-hitl-leg-item"><div class="lr-hitl-dot" style="background:#C8102E"></div>HITL-3 — complex risk · senior UW</div>
+        </div>
+        <div class="lr-note">Submissions can trigger multiple HITL points. 15 run end-to-end STP with no human checkpoint.</div>
+
+        <div style="height:10px"></div>
+        <div class="lr-sec">Prompt fixes applied · v1 → v2</div>
+        <div class="lr-fix-row">
+          <span class="lr-fix-badge">H1</span>
+          <div><div class="lr-fix-name">intake_node — LoB priority rule</div><div class="lr-fix-desc">Only reclassify if email explicitly contradicts declared LoB</div></div>
+          <div class="lr-fix-impact">CA-01 +4.7 pp</div>
+        </div>
+        <div class="lr-fix-row">
+          <span class="lr-fix-badge">H2</span>
+          <div><div class="lr-fix-name">risk_node — risk_flags prohibition</div><div class="lr-fix-desc">No positive/absent data in risk_flags — cuts false HITL-3</div></div>
+          <div class="lr-fix-impact">CA-06 cluster A</div>
+        </div>
+        <div class="lr-fix-row">
+          <span class="lr-fix-badge">H3</span>
+          <div><div class="lr-fix-name">risk_node — multinational criterion</div><div class="lr-fix-desc">6th HITL-3 trigger: multi-location without territorial endorsement</div></div>
+          <div class="lr-fix-impact">CA-06 cluster C</div>
+        </div>
+        <div class="lr-fix-row">
+          <span class="lr-fix-badge">H4</span>
+          <div><div class="lr-fix-name">extraction_node — field priority</div><div class="lr-fix-desc">5 critical fields in priority order · negative rule on missing_fields</div></div>
+          <div class="lr-fix-impact">CA-03 +0.8 pp</div>
+        </div>
+        <div class="lr-open">Open: CA-06 cluster B · 21 residual failures · next iteration</div>
+      </div>
+    </div>
+
+    <div class="br" style="margin-top:10px"><div class="bae">→</div><div class="bt"><strong>Example complete.</strong> The EDD framework — Evidence-Driven Development — closes the loop between agent design and verifiable business value. Each acceptance criterion maps directly to an operational outcome.</div></div>
+  </div>
+
+</div><!-- end slide s3 -->
+
+</div><!-- slide-wrap -->
+
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <button class="nbtn" id="btnp" onclick="nav(-1)" disabled>← Prev</button>
+  <div class="ndots" id="ndots"></div>
+  <button class="nbtn" id="btnn" onclick="nav(1)">Next →</button>
+</div>
+
+</div><!-- outer -->
+<script>
+var cur=1, cursub=1, tot=3, totsub=3;
+
+function buildDots(){
+  var c=document.getElementById('ndots'); c.innerHTML='';
+  var seq=[1,2,'3a','3b','3c'];
+  seq.forEach(function(n){
+    var b=document.createElement('button');
+    var isEx=(n==='3a'||n==='3b'||n==='3c');
+    var isActive=(n===cur||(cur===3&&n==='3'+['a','b','c'][cursub-1]));
+    b.className='ndot'+(isEx?' example':'')+(isActive?' active':'');
+    b.setAttribute('aria-label','Slide '+n);
+    if(isEx){
+      var si=n==='3a'?1:n==='3b'?2:3;
+      b.addEventListener('click',function(){goTo(3);goSub(si)});
+    } else {
+      b.addEventListener('click',function(){goTo(n)});
+    }
+    c.appendChild(b);
+  });
+}
+
+function goSub(n){
+  document.getElementById('ss'+cursub).classList.remove('active');
+  document.querySelectorAll('.subtab-btn')[cursub-1].classList.remove('active');
+  cursub=n;
+  document.getElementById('ss'+cursub).classList.add('active');
+  document.querySelectorAll('.subtab-btn')[cursub-1].classList.add('active');
+  buildDots();
+}
+
+function goTo(n){
+  document.getElementById('s'+cur).classList.remove('active');
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  cur=n;
+  document.getElementById('s'+cur).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(function(b){
+    if(b.getAttribute('onclick')==='goTo('+n+')') b.classList.add('active');
+  });
+  var sb=document.getElementById('subtabbar');
+  if(n===3){sb.classList.add('visible');}else{sb.classList.remove('visible');}
+  var flat=[1,2,'3a','3b','3c'];
+  var flatCur=cur===3?('3'+['a','b','c'][cursub-1]):cur;
+  var idx=flat.indexOf(flatCur);
+  document.getElementById('btnp').disabled=(idx===0);
+  document.getElementById('btnn').disabled=(idx===flat.length-1);
+  buildDots();
+}
+
+function nav(d){
+  var flat=[1,2,'3a','3b','3c'];
+  var flatCur=cur===3?('3'+['a','b','c'][cursub-1]):cur;
+  var idx=flat.indexOf(flatCur);
+  var nxt=flat[idx+d];
+  if(nxt===undefined) return;
+  if(typeof nxt==='string'&&nxt.startsWith('3')){
+    goTo(3);
+    goSub(nxt==='3a'?1:nxt==='3b'?2:3);
+  } else {
+    cursub=1;
+    goTo(nxt);
+    if(nxt!==3) goSub(1);
+  }
+}
+
+buildDots();
+</script>
+</body>
+</html>
